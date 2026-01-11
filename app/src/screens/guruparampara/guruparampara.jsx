@@ -1,43 +1,26 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Images from '../../../utils/Images/Images';
+import FullScreenImageTemplate from '../../components/templates/FullScreenImageTemplate';
 
-const guruparampara = () => {
+const Guruparampara = () => {
   const navigation = useNavigation();
-  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(false); // Hide the ImageBackground after 5 sec
-      navigation.navigate('dashboard');
-
+      navigation.replace('dashboard');
     }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       navigation.navigate('dashboard');
-//     }, 3000);
-
-//     return () => clearTimeout(timer);
-//   }, []);
 
   return (
-    <View style={{flex: 1}}>
-      {isVisible && ( // Conditionally render the view
-        <ImageBackground
-          style={{flex: 1}}
-          source={Images.SHIKSHAPATRI}
-          resizeMode="cover"
-        />
-      )}
-    </View>
+    <FullScreenImageTemplate imageSource={Images.SHIKSHAPATRI} />
   );
 };
 
 
-export default guruparampara
+export default Guruparampara
 
 const styles = StyleSheet.create({})

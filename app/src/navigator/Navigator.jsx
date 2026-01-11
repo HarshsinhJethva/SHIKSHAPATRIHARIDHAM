@@ -1,12 +1,12 @@
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Dashboard from '../screens/dahsboard/Dashboard';
-import Loading from '../screens/loading/Loading';
-import ShlokasDetails from '../screens/shlokasDetails/ShlokasDetails'; 
-import ShlokasList from '../screens/ShlokasList/ShlokasList';
-import guruparampara from '../screens/guruparampara/guruparampara';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Dashboard from '@screens/dashboard/Dashboard';
+import Loading from '@screens/loading/Loading';
+import ShlokasDetails from '@screens/shlokasDetails/ShlokasDetails';
+import ShlokasList from '@screens/ShlokasList/ShlokasList';
+import Guruparampara from '@screens/guruparampara/guruparampara';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,27 +17,27 @@ const Navigator = () => {
         <Stack.Screen
           name="loading"
           component={Loading}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="guruparampara"
-          component={guruparampara} 
-          options={{headerShown: false}}
+          component={Guruparampara}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="dashboard"
           component={Dashboard}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="shlokasDetails"
-          component={ShlokasDetails} 
-          options={{headerShown: false}}
+          component={ShlokasDetails}
+          options={{ headerShown: false }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="shlokasList"
-          component={ShlokasList} 
-          options={{headerShown: false}}
+          component={ShlokasList}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

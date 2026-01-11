@@ -117,20 +117,21 @@
 
 // export default App;
 
-import {StatusBar, StyleSheet, Text, View} from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import Navigator from './app/src/navigator/Navigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const App = () => {
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar
         backgroundColor="transparent"
         translucent={true}
         barStyle="dark-content"
       />
       <Navigator />
-    </>
+    </SafeAreaProvider>
   );
 };
 
