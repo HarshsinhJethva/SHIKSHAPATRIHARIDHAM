@@ -1,37 +1,99 @@
+import React from 'react';
 import {
-  ImageBackground,
-  SafeAreaView,
   View,
+  StyleSheet,
+  StatusBar,
+  ViewStyle,
+  Platform,
 } from 'react-native';
-import { Divider } from '@rneui/themed';
-import Images from '../../../utils/Images/Images';
-import { styles } from '../../screens/ShlokasList/styles';
-import { vs } from '../../../utils/helper/Metrics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '@utils/theme';
+import { hs, vs } from '@utils/helper/Metrics';
 
-interface TemplateProps {
+interface ShlokasListTemplateProps {
   header: React.ReactNode;
-  controls: React.ReactNode;
+  controls?: React.ReactNode;
   children: React.ReactNode;
+  footer?: React.ReactNode;
+  style?: ViewStyle;
 }
 
-const ShlokasListTemplate: React.FC<TemplateProps> = ({ header, controls, children }) => {
+const ShlokasListTemplate: React.FC<ShlokasListTemplateProps> = ({
+  header,
+  controls,
+  children,
+  footer,
+  style,
+}) => {
+  const insets = useSafeAreaInsets();
+  const safeTopPadding = Math.max(
+    insets.top,
+    Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 44
+  ) + vs(8);
+
   return (
-    <ImageBackground
-      style={styles.imageBackground}
-      source={Images.BACKGROUND}
-      resizeMode="cover">
-      <SafeAreaView style={styles.SafeAreaView}>
-        <View style={styles.mainView}>
-          {header}
-          {controls}
+    <View style={[styles.screenContainer, { paddingTop: safeTopPadding }]}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <View style={[styles.container, style]}>
+        {/* Header Row */}
+        <View style={styles.headerRow}>
+          <View style={styles.headerSlot}>{header}</View>
+          {controls ? <View style={styles.controlsSlot}>{controls}</View> : null}
         </View>
-        <Divider width={1} color="rgb(161,127,69)" style={{ margin: vs(8) }} />
-        <View style={styles.container}>
-            {children}
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+
+        {/* Thin Gold Separator */}
+        <View style={styles.divider} />
+
+        {/* Main Content Area */}
+        <View style={styles.contentArea}>{children}</View>
+
+        {/* Optional Docked Footer */}
+        {footer ? <View style={styles.footerArea}>{footer}</View> : null}
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: hs(14),
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: vs(4),
+  },
+  headerSlot: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  controlsSlot: {
+    marginLeft: hs(8),
+    justifyContent: 'center',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.divider,
+    marginVertical: vs(10),
+    marginHorizontal: hs(2),
+  },
+  contentArea: {
+    flex: 1,
+  },
+  footerArea: {
+    width: '100%',
+    paddingBottom: Platform.OS === 'ios' ? vs(8) : vs(4),
+  },
+});
 
 export default ShlokasListTemplate;

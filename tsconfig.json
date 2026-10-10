@@ -6,14 +6,53 @@
       "@components/*": [
         "app/src/components/*"
       ],
+      "@components": [
+        "app/src/components/index"
+      ],
+      "@atoms/*": [
+        "app/src/components/atoms/*"
+      ],
+      "@atoms": [
+        "app/src/components/atoms/index"
+      ],
+      "@molecules/*": [
+        "app/src/components/molecules/*"
+      ],
+      "@molecules": [
+        "app/src/components/molecules/index"
+      ],
+      "@organisms/*": [
+        "app/src/components/organisms/*"
+      ],
+      "@organisms": [
+        "app/src/components/organisms/index"
+      ],
+      "@templates/*": [
+        "app/src/components/templates/*"
+      ],
+      "@templates": [
+        "app/src/components/templates/index"
+      ],
       "@utils/*": [
         "app/utils/*"
       ],
       "@screens/*": [
         "app/src/screens/*"
       ],
+      "@navigator/*": [
+        "app/src/navigator/*"
+      ],
+      "@navigator": [
+        "app/src/navigator/Navigator"
+      ],
       "@assets/*": [
         "app/assets/*"
+      ],
+      "@theme/*": [
+        "app/src/theme/*"
+      ],
+      "@theme": [
+        "app/src/theme/index"
       ]
     }
   }

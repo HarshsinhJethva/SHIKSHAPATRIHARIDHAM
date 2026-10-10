@@ -1,51 +1,72 @@
-import React, { useState } from 'react';
-import { ms } from '../../../utils/helper/Metrics';
-import { styles } from './styles';
-import HeaderWithBack from '../../components/molecules/HeaderWithBack';
-import FontSizeControls from '../../components/molecules/FontSizeControls';
-import NavigationControls from '../../components/molecules/NavigationControls';
-import ShlokaContent from '../../components/organisms/ShlokaContent';
-import ShlokasListTemplate from '../../components/templates/ShlokasListTemplate';
+import React, { useState, useCallback, useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import HeaderWithBack from '@components/molecules/HeaderWithBack';
+import FontSizeControls from '@components/molecules/FontSizeControls';
+import NavigationControls from '@components/molecules/NavigationControls';
+import ShlokaContent from '@components/organisms/ShlokaContent';
+import ShlokasListTemplate from '@components/templates/ShlokasListTemplate';
+import { saveLastReadShloka } from '@utils/storage/lastReadStorage';
+import { ms } from '@utils/helper/Metrics';
+
+const MAX_FONT_SIZE = ms(28);
+const MIN_FONT_SIZE = ms(13);
 
 const ShlokasDetails = ({ navigation, route }) => {
-  const shloka = route.params.shloka;
-  const [fontSize, setFontSize] = useState(16);
-  const MAX_FONT_SIZE = ms(32);
-  const MIN_FONT_SIZE = ms(10);
+  const { index, shlokas_list, shlokas_data } = route.params || {};
 
-  const { index, shlokas_list, shlokas_data } = route.params;
-  const [currentIndex, setCurrentIndex] = useState(index);
-  const currentShloka = shlokas_data[currentIndex];
-  const displayIndex = currentIndex + 1;
+  const [currentIndex, setCurrentIndex] = useState(index || 0);
+  const [fontSize, setFontSize] = useState(ms(16));
 
-  const handleNext = () => {
-    if (currentIndex < shlokas_data.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+  const totalShlokasCount = shlokas_data?.length || 0;
+  const currentShloka = shlokas_data?.[currentIndex];
+
+  // Persist current reading position to AsyncStorage
+  useEffect(() => {
+    if (currentShloka?.id !== undefined) {
+      saveLastReadShloka({
+        shlokaId: currentShloka.id,
+        shlokaIndex: currentIndex,
+        chapterId: shlokas_list?.menuId || 0,
+        chapterTitle: shlokas_list?.menuTitle || 'શિક્ષાપત્રી',
+        isDhyan: shlokas_list?.menuId === 1,
+      });
     }
-  };
+  }, [currentIndex, currentShloka, shlokas_list]);
 
-  const handlePrevious = () => {
+  const handleNext = useCallback(() => {
+    if (currentIndex < totalShlokasCount - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  }, [currentIndex, totalShlokasCount]);
+
+  const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      setCurrentIndex((prev) => prev - 1);
     }
-  };
-  const increaseFontSize = () => {
-    setFontSize(prevSize =>
-      prevSize < MAX_FONT_SIZE ? prevSize + 2 : prevSize,
-    );
-  };
+  }, [currentIndex]);
 
-  const decreaseFontSize = () => {
-    setFontSize(prevSize =>
-      prevSize > MIN_FONT_SIZE ? prevSize - 2 : prevSize,
+  const increaseFontSize = useCallback(() => {
+    setFontSize((prevSize) =>
+      prevSize < MAX_FONT_SIZE ? prevSize + 2 : prevSize
     );
-  };
+  }, []);
+
+  const decreaseFontSize = useCallback(() => {
+    setFontSize((prevSize) =>
+      prevSize > MIN_FONT_SIZE ? prevSize - 2 : prevSize
+    );
+  }, []);
+
+  const chapterTitle = shlokas_list?.menuTitle || 'શિક્ષાપત્રી';
+  const headerTitle = currentShloka?.id
+    ? `શ્લોક ${currentShloka.id} • ${chapterTitle}`
+    : chapterTitle;
 
   return (
     <ShlokasListTemplate
       header={
         <HeaderWithBack
-          title={`${displayIndex}. ${shlokas_list?.menuTitle}`}
+          title={headerTitle}
           onBackPress={() => navigation.goBack()}
         />
       }
@@ -55,22 +76,31 @@ const ShlokasDetails = ({ navigation, route }) => {
           onDecrease={decreaseFontSize}
         />
       }
+      footer={
+        <NavigationControls
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          disablePrevious={currentIndex === 0}
+          disableNext={currentIndex === totalShlokasCount - 1}
+          currentIndex={currentIndex}
+          totalCount={totalShlokasCount}
+        />
+      }
     >
-      <ShlokaContent
-        currentShloka={currentShloka}
-        fontSize={fontSize}
-        animationKey={currentIndex}
-      />
-      <NavigationControls
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        disablePrevious={currentIndex === 0}
-        disableNext={currentIndex === shlokas_data.length - 1}
-      />
+      <View style={styles.contentContainer}>
+        <ShlokaContent
+          currentShloka={currentShloka}
+          fontSize={fontSize}
+        />
+      </View>
     </ShlokasListTemplate>
   );
 };
 
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+  },
+});
+
 export default ShlokasDetails;
-
-

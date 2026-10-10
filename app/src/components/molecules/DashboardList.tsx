@@ -1,29 +1,62 @@
-import React, { useEffect } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import DashboardCard from './DashboardCard';
-import AnimatableWrapper from '../atoms/AnimatableWrapper';
-import { animateLayout } from '../atoms/LayoutAnimatable'; // Import our helper
+import React from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  ListRenderItemInfo,
+  Platform,
+} from 'react-native';
+import DashboardCard from '@components/molecules/DashboardCard';
+import AnimatableWrapper from '@components/atoms/AnimatableWrapper';
 import { hs, vs } from '@utils/helper/Metrics';
 
-interface DashboardListProps {
-  data: any[];
-  onItemPress: (item: any) => void;
+interface DashboardItem {
+  menuId: number;
+  menuTitle: string;
+  start: number | string;
+  end: number | string;
 }
 
-const DashboardList: React.FC<DashboardListProps> = ({ data, onItemPress }) => {
-  useEffect(() => {
-    animateLayout(); // Trigger LayoutAnimation on mount/update
-  }, [data]);
+interface DashboardListProps {
+  data: DashboardItem[];
+  onItemPress: (item: DashboardItem) => void;
+  ListHeaderComponent?: React.ReactElement | null;
+  ListEmptyComponent?: React.ReactElement | null;
+}
 
-  const renderItem = ({ item, index }: { item: any; index: number }) => {
+const DashboardList: React.FC<DashboardListProps> = ({
+  data,
+  onItemPress,
+  ListHeaderComponent,
+  ListEmptyComponent,
+}) => {
+  const renderItem = ({ item, index }: ListRenderItemInfo<DashboardItem>) => {
+    const shouldAnimate = index < 8;
+
+    if (!shouldAnimate) {
+      return (
+        <View style={styles.itemWrapper}>
+          <DashboardCard
+            id={index + 1}
+            title={item?.menuTitle}
+            start={item?.start}
+            end={item?.end}
+            onPress={() => onItemPress(item)}
+          />
+        </View>
+      );
+    }
+
     return (
       <AnimatableWrapper
-        animation="zoomInUp"
-        duration={800}
-        delay={index * 100} // Stagger effect
-        style={{ flex: 1 }}
+        animation="fadeInUp"
+        duration={300}
+        delay={index * 30}
+        useNativeDriver={true}
+        style={styles.itemWrapper}
       >
         <DashboardCard
+          id={index + 1}
           title={item?.menuTitle}
           start={item?.start}
           end={item?.end}
@@ -40,8 +73,14 @@ const DashboardList: React.FC<DashboardListProps> = ({ data, onItemPress }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.menuId.toString()}
         numColumns={2}
+        ListHeaderComponent={ListHeaderComponent}
+        ListEmptyComponent={ListEmptyComponent}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        initialNumToRender={8}
+        maxToRenderPerBatch={6}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === 'android'}
       />
     </View>
   );
@@ -50,13 +89,15 @@ const DashboardList: React.FC<DashboardListProps> = ({ data, onItemPress }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '88%', // Kept from original styles
   },
   contentContainer: {
     flexGrow: 1,
-    paddingBottom: vs(8),
-    marginHorizontal: hs(2), // Adjusted from right: hs(2) to be more balanced
+    paddingBottom: vs(24),
+    paddingHorizontal: hs(2),
+  },
+  itemWrapper: {
+    flex: 1,
   },
 });
 
-export default DashboardList;
+export default React.memo(DashboardList);

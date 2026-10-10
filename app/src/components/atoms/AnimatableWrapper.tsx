@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { View, ViewStyle, StyleProp } from 'react-native';
+import React from 'react';
+import { ViewStyle, StyleProp } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 interface AnimatableWrapperProps {
-  animation?: string;
+  animation?: any;
   duration?: number;
   delay?: number;
   style?: StyleProp<ViewStyle>;

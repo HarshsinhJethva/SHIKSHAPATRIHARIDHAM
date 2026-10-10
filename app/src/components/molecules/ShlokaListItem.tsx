@@ -1,14 +1,17 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import AppText from '../atoms/AppText';
-import AnimatableWrapper from '../atoms/AnimatableWrapper';
-import { hs, vs } from '@utils/helper/Metrics';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import AppText from '@components/atoms/AppText';
+import CardSurface from '@components/atoms/CardSurface';
+import AnimatableWrapper from '@components/atoms/AnimatableWrapper';
+import { colors, borderRadius } from '@utils/theme';
+import { hs, vs, ms } from '@utils/helper/Metrics';
 
 interface ShlokaListItemProps {
   item: {
     id: number | string;
     gujSanskrit?: string;
     gujarati?: string;
+    sanskrit?: string;
   };
   fontSize: number;
   onPress: () => void;
@@ -23,62 +26,141 @@ const ShlokaListItem: React.FC<ShlokaListItemProps> = ({
   index,
   style,
 }) => {
-  return (
-    <AnimatableWrapper
-      animation="zoomInUp"
-      duration={500}
-      delay={index * 50} // Stagger
-      style={[styles.listItem, style]}
+  const primaryText = item.gujSanskrit || item.sanskrit || item.gujarati || '';
+  const secondaryText = item.gujarati && item.gujSanskrit ? item.gujarati : '';
+
+  const primaryFontSize = Math.max(fontSize, ms(14));
+  const secondaryFontSize = Math.max(fontSize - 2, ms(12));
+  const primaryLineHeight = Math.round(primaryFontSize * 1.55);
+  const secondaryLineHeight = Math.round(secondaryFontSize * 1.5);
+
+  const itemContent = (
+    <CardSurface
+      onPress={onPress}
+      variant="gold"
+      style={styles.card}
+      activeOpacity={0.72}
     >
-      <TouchableOpacity
-        style={styles.touchable}
-        onPress={onPress}
-        activeOpacity={0.7}
-      >
-        <AppText numberOfLines={1} style={[styles.idText, { fontSize }]}>
-          {item.id}
-        </AppText>
+      <View style={styles.badgeContainer}>
+        <View style={styles.idCircle}>
+          <AppText
+            variant="caption"
+            weight="bold"
+            color={colors.primaryDark}
+            style={styles.idText}
+          >
+            {item.id}
+          </AppText>
+        </View>
+      </View>
+
+      <View style={styles.contentContainer}>
         <AppText
           numberOfLines={1}
-          style={[styles.shlokaText, { fontSize }]}
+          style={[
+            styles.primaryText,
+            {
+              fontSize: primaryFontSize,
+              lineHeight: primaryLineHeight,
+            },
+          ]}
         >
-          {item.gujSanskrit || item.gujarati}
+          {primaryText}
         </AppText>
-      </TouchableOpacity>
-    </AnimatableWrapper>
+        {secondaryText ? (
+          <AppText
+            numberOfLines={1}
+            style={[
+              styles.secondaryText,
+              {
+                fontSize: secondaryFontSize,
+                lineHeight: secondaryLineHeight,
+              },
+            ]}
+          >
+            {secondaryText}
+          </AppText>
+        ) : null}
+      </View>
+
+      <View style={styles.chevronContainer}>
+        <AppText style={styles.chevron}>›</AppText>
+      </View>
+    </CardSurface>
   );
+
+  if (index < 10) {
+    return (
+      <AnimatableWrapper
+        animation="fadeInUp"
+        duration={300}
+        delay={index * 25}
+        useNativeDriver={true}
+        style={[styles.wrapper, style]}
+      >
+        {itemContent}
+      </AnimatableWrapper>
+    );
+  }
+
+  return <View style={[styles.wrapper, style]}>{itemContent}</View>;
 };
 
 const styles = StyleSheet.create({
-  listItem: {
-    marginHorizontal: '2%',
-    padding: 4,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    width: '100%',
+  wrapper: {
+    marginVertical: vs(4),
+    marginHorizontal: hs(2),
   },
-  touchable: {
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
-    flexWrap: 'wrap',
+    paddingVertical: vs(10),
+    paddingHorizontal: hs(12),
+    backgroundColor: colors.surfaceGold,
+    borderColor: colors.borderLight,
+    borderWidth: 1,
+    borderRadius: borderRadius.md,
+  },
+  badgeContainer: {
+    marginRight: hs(10),
+  },
+  idCircle: {
+    width: ms(32),
+    height: ms(32),
+    borderRadius: ms(16),
+    backgroundColor: colors.goldBadgeBg,
+    borderWidth: 1.2,
+    borderColor: colors.goldBadgeBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   idText: {
-    color: 'rgb(83, 61, 22)',
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-    marginRight: 8,
+    fontSize: ms(13),
+    color: colors.primaryDark,
+    lineHeight: ms(16),
   },
-  shlokaText: {
-    color: 'rgb(83, 61, 22)',
-    borderWidth: 0.2,
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-    paddingVertical: 4,
-    width: '83%',
-    paddingHorizontal: 8,
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingRight: hs(6),
+    paddingVertical: vs(2),
+  },
+  primaryText: {
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+  secondaryText: {
+    color: colors.textMuted,
+    marginTop: vs(2),
+  },
+  chevronContainer: {
+    paddingLeft: hs(4),
+  },
+  chevron: {
+    fontSize: ms(20),
+    color: colors.primary,
+    fontWeight: '700',
   },
 });
 
-export default ShlokaListItem;
+export default React.memo(ShlokaListItem);

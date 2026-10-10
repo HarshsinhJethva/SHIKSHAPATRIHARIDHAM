@@ -1,26 +1,27 @@
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import Images from '../../../utils/Images/Images';
+import Images from '@utils/Images/Images';
 import { useNavigation } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
-import FullScreenImageTemplate from '../../components/templates/FullScreenImageTemplate';
+import FullScreenImageTemplate from '@components/templates/FullScreenImageTemplate';
 
 const Loading = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      SplashScreen.hide();
-      navigation.replace('guruparampara');
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    try {
+      SplashScreen?.hide();
+    } catch (e) {
+      // Safe fallback if native module is not attached
+    }
 
-  return (
-    <FullScreenImageTemplate imageSource={Images.SHIKSHAPATRI} />
-  );
+    const timer = setTimeout(() => {
+      navigation.replace('dashboard');
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
+
+  return <FullScreenImageTemplate imageSource={Images.SHIKSHAPATRI} />;
 };
 
 export default Loading;
-
-const styles = StyleSheet.create({});

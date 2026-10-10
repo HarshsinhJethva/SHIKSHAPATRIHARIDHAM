@@ -1,5 +1,13 @@
 import React from 'react';
-import { ImageBackground, View, StyleSheet, ImageSourcePropType } from 'react-native';
+import {
+  ImageBackground,
+  View,
+  StyleSheet,
+  ImageSourcePropType,
+  StatusBar,
+  SafeAreaView,
+} from 'react-native';
+import { colors } from '@utils/theme';
 
 interface FullScreenImageTemplateProps {
   imageSource: ImageSourcePropType;
@@ -12,12 +20,19 @@ const FullScreenImageTemplate: React.FC<FullScreenImageTemplateProps> = ({
 }) => {
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
       <ImageBackground
         style={styles.imageBackground}
         source={imageSource}
         resizeMode="cover"
       >
-        {children}
+        <SafeAreaView style={styles.safeArea}>
+          {children}
+        </SafeAreaView>
       </ImageBackground>
     </View>
   );
@@ -26,8 +41,12 @@ const FullScreenImageTemplate: React.FC<FullScreenImageTemplateProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   imageBackground: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
 });

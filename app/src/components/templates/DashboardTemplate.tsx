@@ -1,72 +1,59 @@
 import React from 'react';
 import {
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
   View,
+  StyleSheet,
   StatusBar,
+  ViewStyle,
+  Platform,
 } from 'react-native';
-import { Divider } from '@rneui/themed';
-import { ms, vs, hs } from '@utils/helper/Metrics';
-import Images from '@utils/Images/Images';
-import AppText from '../atoms/AppText';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '@utils/theme';
+import { hs, vs } from '@utils/helper/Metrics';
 
 interface DashboardTemplateProps {
-  title: string;
+  header?: React.ReactNode;
   children: React.ReactNode;
+  style?: ViewStyle;
 }
 
 const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
-  title,
+  header,
   children,
+  style,
 }) => {
+  const insets = useSafeAreaInsets();
+  const safeTopPadding = Math.max(
+    insets.top,
+    Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 44
+  ) + vs(6);
+
   return (
-    <ImageBackground
-      style={styles.imageBackground}
-      source={Images.BACKGROUND}
-      resizeMode="cover"
-    >
-      <SafeAreaView style={styles.safeAreaViewMainView}>
-        <View style={styles.headerContainer}>
-          <AppText style={styles.headerText}>{title}</AppText>
-        </View>
-        <Divider width={1} color="rgb(161,127,69)" style={styles.divider} />
-        
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+    <View style={[styles.screenContainer, { paddingTop: safeTopPadding }]}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <View style={[styles.container, style]}>
+        {header}
+        <View style={styles.content}>{children}</View>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  imageBackground: {
+  screenContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: hs(14),
+  },
+  content: {
     flex: 1,
   },
-  safeAreaViewMainView: {
-    flex: 1,
-    marginHorizontal: hs(24),
-    marginVertical: vs(24),
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    marginTop: vs(10), // Simplified
-    justifyContent: 'space-between',
-    marginBottom: vs(10)
-  },
-  headerText: {
-    textAlign: 'left',
-    fontSize: ms(24),
-    fontWeight: '600',
-    color: 'rgb(161,127,69)',
-  },
-  divider: {
-    marginVertical: vs(8),
-  },
-  contentContainer: {
-    flex: 1,
-  }
 });
 
 export default DashboardTemplate;
