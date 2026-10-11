@@ -1,27 +1,11 @@
-import React, { useEffect } from 'react';
-import Images from '@utils/Images/Images';
-import { useNavigation } from '@react-navigation/native';
-import SplashScreen from 'react-native-splash-screen';
+import React from 'react';
 import FullScreenImageTemplate from '@components/templates/FullScreenImageTemplate';
+import useLoading from './useLoading';
 
-const Loading = () => {
-  const navigation = useNavigation();
+const Loading = ({ navigation }) => {
+  const { imageSource } = useLoading({ navigation });
 
-  useEffect(() => {
-    try {
-      SplashScreen?.hide();
-    } catch (e) {
-      // Safe fallback if native module is not attached
-    }
-
-    const timer = setTimeout(() => {
-      navigation.replace('dashboard');
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [navigation]);
-
-  return <FullScreenImageTemplate imageSource={Images.SHIKSHAPATRI} />;
+  return <FullScreenImageTemplate imageSource={imageSource} />;
 };
 
 export default Loading;
